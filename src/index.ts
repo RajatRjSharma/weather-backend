@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { errorHandler } from "./middleware/errorMiddleware";
 
 dotenv.config();
 
@@ -16,11 +17,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Weather backend API is running");
 });
 
-// Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
-});
+// Error Handler Middleware
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
