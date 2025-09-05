@@ -24,10 +24,15 @@ const options = {
         description: "Weather and forcast endpoints",
       },
       {
+        name: "SavedCities",
+        description: "User saved cities management",
+      },
+      {
         name: "Other",
         description:
           "Tourism attractions and points of interest and Local news and current events",
       },
+
       // Add other tag groups here in the desired order
     ],
     components: {

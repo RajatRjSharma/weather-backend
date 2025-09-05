@@ -42,6 +42,8 @@ const router = express.Router();
  *           default: 1000
  *         required: false
  *         description: Search radius in meters
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Nearby tourist attractions
@@ -62,6 +64,8 @@ router.get("/attractions/nearby", authenticate, fetchAttractionsNearby);
  *           example: us
  *         required: false
  *         description: Country code (ISO 3166-1 alpha-2)
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Top news headlines

@@ -9,6 +9,7 @@ import cityRoutes from "./routes/cityRoutes";
 import weatherRoutes from "./routes/weatherRoutes";
 import otherRoutes from "./routes/otherRoutes";
 import cookieParser from "cookie-parser";
+import savedCityRoutes from "./routes/savedCityRoutes";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/cities", cityRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/other", otherRoutes);
+app.use("/api/savedCities", savedCityRoutes);
 
 app.use("/api/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
