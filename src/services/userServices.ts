@@ -2,6 +2,10 @@ import prisma from "../prismaClient";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { BadRequestError, UnauthorizedError } from "../utils/errors";
+import {
+  loginUserSchema,
+  registerUserSchema,
+} from "../validations/userValidations";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
@@ -19,18 +23,23 @@ interface LoginUserInput {
   password: string;
 }
 
-export const registerUser = async (data: RegisterUserInput) => {
-  const { firstname, lastname, username, email, password } = data;
-
-  if (!email || !password || !username) {
-    throw new BadRequestError("Missing required fields");
+export const registerUser = async (data: unknown) => {
+  // Validate data with Zod schema
+  const parsedData = registerUserSchema.safeParse(data);
+  if (!parsedData.success) {
+    const messages = parsedData.error.issues.map((e) => e.message).join(", ");
+    throw new BadRequestError(messages);
   }
+  // Extract validated fields
+  const { firstname, lastname, username, email, password } = parsedData.data;
 
+  // Check if email already exists
   const existingEmailUser = await prisma.user.findUnique({ where: { email } });
   if (existingEmailUser) {
     throw new BadRequestError("Email already registered");
   }
 
+  // Check if username already exists
   const existingUsernameUser = await prisma.user.findUnique({
     where: { username },
   });
@@ -38,19 +47,30 @@ export const registerUser = async (data: RegisterUserInput) => {
     throw new BadRequestError("Username already taken");
   }
 
+  // Hash the password securely
   const passwordHash = await bcrypt.hash(password, 10);
 
+  // Create the new user record in the database
   await prisma.user.create({
-    data: { firstname, lastname, username, email, passwordHash },
+    data: {
+      firstname,
+      lastname,
+      username,
+      email,
+      passwordHash,
+    },
   });
 };
 
-export const loginUser = async (data: LoginUserInput) => {
-  const { email, password } = data;
-
-  if (!email || !password) {
-    throw new BadRequestError("Email and password are required");
+export const loginUser = async (data: unknown) => {
+  // Validate input using Zod
+  const parsedData = loginUserSchema.safeParse(data);
+  if (!parsedData.success) {
+    const messages = parsedData.error.issues.map((i) => i.message).join(", ");
+    throw new BadRequestError(messages);
   }
+
+  const { email, password } = parsedData.data;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {

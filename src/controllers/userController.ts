@@ -5,32 +5,34 @@ import { sendResponse } from "../utils/responseHandler";
 export const registerUser = async (req: Request, res: Response) => {
   try {
     await userService.registerUser(req.body);
-    sendResponse({ res, message: "User registered successfully" });
-  } catch (error: any) {
-    sendResponse({
-      res,
-      statusCode: error.statusCode || 500,
-      message: error.message || "Internal Server Error",
-    });
+    res
+      .status(201)
+      .json({ status: true, message: "User registered successfully" });
+  } catch (err: any) {
+    res
+      .status(err.statusCode || 500)
+      .json({ status: false, message: err.message || "Internal Server Error" });
   }
 };
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const tokens = await userService.loginUser(req.body);
-    // Set cookies
+
     res.cookie("accessToken", tokens.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
       sameSite: "strict",
     });
+
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: "strict",
     });
+
     sendResponse({ res, message: "Login successful" });
   } catch (error: any) {
     sendResponse({

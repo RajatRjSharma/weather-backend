@@ -24,11 +24,18 @@ const router = express.Router();
  *     summary: Register a new user
  *     tags: [Users]
  *     requestBody:
+ *       description: User registration data
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - firstname
+ *               - lastname
+ *               - username
+ *               - email
+ *               - password
  *             properties:
  *               firstname:
  *                 type: string
@@ -46,11 +53,7 @@ const router = express.Router();
  *               password:
  *                 type: string
  *                 format: password
- *                 example: strongPassword123
- *             required:
- *               - username
- *               - email
- *               - password
+ *                 example: StrongPass123
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -66,9 +69,9 @@ const router = express.Router();
  *                   type: string
  *                   example: User registered successfully
  *       400:
- *         description: Missing required fields
- *       409:
- *         description: Email or username already registered
+ *         description: Validation or conflict error
+ *       500:
+ *         description: Server error
  */
 router.post("/register", registerUser);
 
@@ -112,8 +115,43 @@ router.post("/register", registerUser);
  *                   example: Login successful
  *       400:
  *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Missing required fields
  *       401:
  *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid credentials
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
  */
 router.post("/login", loginUser);
 

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as otherService from "../services/otherServices";
+import { getFuzzyCountryCode } from "../utils/constants";
 
 export const fetchAttractionsNearby = async (req: Request, res: Response) => {
   try {
@@ -20,8 +21,9 @@ export const fetchAttractionsNearby = async (req: Request, res: Response) => {
 
 export const fetchTopHeadlines = async (req: Request, res: Response) => {
   try {
-    const country = (req.query.country as string) || "us";
-    const data = await otherService.getTopHeadlinesByCountry(country);
+    const countryName = (req.query.country as string) || "United States";
+    const countryCode = getFuzzyCountryCode(countryName);
+    const data = await otherService.getTopHeadlinesByCountry(countryCode);
     res.json({ status: true, data });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch news headlines" });
