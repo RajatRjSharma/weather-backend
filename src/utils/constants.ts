@@ -1,6 +1,10 @@
 import stringSimilarity from "string-similarity";
 
-export const countryNameToCode = {
+interface CountryCodeMap {
+  [key: string]: string;
+}
+
+export const countryNameToCode: CountryCodeMap = {
   Afghanistan: "AF",
   Albania: "AL",
   Algeria: "DZ",
