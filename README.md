@@ -147,3 +147,8 @@ MIT License
 ---
 
 For questions, bug reports, or contributions, please open an issue or submit a pull request on the GitHub repository.
+
+## Coverage
+
+![Alt text](./coverage.png)
+
