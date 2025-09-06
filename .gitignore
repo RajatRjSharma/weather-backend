@@ -13,7 +13,7 @@
 .env.*.local
 
 # Prisma generated files
-/prisma/migrations/
+# /prisma/migrations/
 /node_modules/.prisma
 
 # Logs
