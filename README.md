@@ -142,7 +142,7 @@ Use the interactive API Explorer for route details and testing.
 
 ## License
 
-ISC License
+MIT License
 
 ---
 
