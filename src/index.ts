@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorMiddleware";
 import swaggerUi from "swagger-ui-express";
@@ -25,8 +25,34 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(morgan("dev")); 
-app.use(cors());
+app.use(morgan("dev"));
+
+const allowedOrigins = [
+  "https://rajatrjsharma.github.io",
+  "http://localhost:5174",
+  "https://weather.rajatkumarsharma.com",
+];
+
+const corsOptions: CorsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin) {
+      // Allow requests with no origin like curl, postman
+      callback(null, true);
+      return;
+    }
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 // Rate limiting on all /api routes
@@ -71,4 +97,3 @@ process.on("uncaughtException", (err) => {
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
-
