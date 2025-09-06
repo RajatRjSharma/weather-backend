@@ -10,7 +10,7 @@ export const parseCookies = cookieParser();
 export const csrfProtection = csurf({
   cookie: {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
   },
 });
@@ -21,7 +21,10 @@ export const exposeCsrfToken = (
   res: Response,
   next: NextFunction
 ) => {
-  res.cookie("XSRF-TOKEN", req.csrfToken());
+  res.cookie("XSRF-TOKEN", req.csrfToken(), {
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
   next();
 };
 
