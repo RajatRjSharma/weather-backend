@@ -59,13 +59,13 @@ app.use(cookieParser());
 app.use("/api", apiLimiter);
 
 // Cookie parser middleware before CSRF middleware
-app.use(parseCookies);
+// app.use(parseCookies);
 
 // CSRF protection middleware for all /api routes that mutate data
-app.use("/api", csrfProtection);
+// app.use("/api", csrfProtection);
 
 // Middleware to send CSRF token for client usage
-app.use(exposeCsrfToken);
+// app.use(exposeCsrfToken);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
@@ -81,7 +81,7 @@ app.use("/api/savedCities", savedCityRoutes);
 app.use("/api/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CSRF error handler (put after routes)
-app.use(csrfErrorHandler);
+// app.use(csrfErrorHandler);
 
 // Error Handler Middleware
 app.use(errorHandler);
