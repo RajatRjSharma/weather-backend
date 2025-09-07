@@ -18,29 +18,86 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+// export const loginUser = async (req: Request, res: Response) => {
+//   try {
+//     const tokens = await userService.loginUser(req.body);
+
+//     res.cookie("accessToken", tokens.accessToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 15 * 60 * 1000,
+//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//       domain: COOKIE_DOMAIN,
+//       path: "/",
+//     });
+
+//     res.cookie("refreshToken", tokens.refreshToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//       domain: COOKIE_DOMAIN,
+//       path: "/",
+//     });
+
+//     sendResponse({ res, message: "Login successful" });
+//   } catch (error: any) {
+//     sendResponse({
+//       res,
+//       statusCode: error.statusCode || 500,
+//       message: error.message || "Internal Server Error",
+//     });
+//   }
+// };
+
+// export const logoutUser = (req: Request, res: Response) => {
+//   res.clearCookie("accessToken", { domain: COOKIE_DOMAIN, path: "/" });
+//   res.clearCookie("refreshToken", { domain: COOKIE_DOMAIN, path: "/" });
+//   sendResponse({ res, message: "Logged out successfully" });
+// };
+
+// export const refreshToken = async (req: Request, res: Response) => {
+//   try {
+//     const tokens = await userService.refreshToken(req.cookies.refreshToken);
+//     res.cookie("accessToken", tokens.accessToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 15 * 60 * 1000,
+//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//       domain: COOKIE_DOMAIN,
+//       path: "/",
+//     });
+//     res.cookie("refreshToken", tokens.refreshToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//       domain: COOKIE_DOMAIN,
+//       path: "/",
+//     });
+//     sendResponse({ res, message: "Token refreshed" });
+//   } catch (error: any) {
+//     sendResponse({
+//       res,
+//       statusCode: error.statusCode || 403,
+//       message: error.message || "Invalid refresh token",
+//     });
+//   }
+// };
+
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const tokens = await userService.loginUser(req.body);
 
-    res.cookie("accessToken", tokens.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: COOKIE_DOMAIN,
-      path: "/",
+    // Return tokens in JSON response, not cookies
+    sendResponse({
+      res,
+      message: "Login successful",
+      data: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
     });
-
-    res.cookie("refreshToken", tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: COOKIE_DOMAIN,
-      path: "/",
-    });
-
-    sendResponse({ res, message: "Login successful" });
   } catch (error: any) {
     sendResponse({
       res,
@@ -51,31 +108,25 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const logoutUser = (req: Request, res: Response) => {
-  res.clearCookie("accessToken", { domain: COOKIE_DOMAIN, path: "/" });
-  res.clearCookie("refreshToken", { domain: COOKIE_DOMAIN, path: "/" });
+  // No cookies to clear, just send success
   sendResponse({ res, message: "Logged out successfully" });
 };
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
-    const tokens = await userService.refreshToken(req.cookies.refreshToken);
-    res.cookie("accessToken", tokens.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: COOKIE_DOMAIN,
-      path: "/",
+    // Expect refresh token in request body or header
+    const refreshToken =
+      req.body.refreshToken || req.headers["x-refresh-token"];
+    if (!refreshToken) throw new Error("Refresh token missing");
+    const tokens = await userService.refreshToken(refreshToken);
+    sendResponse({
+      res,
+      message: "Token refreshed",
+      data: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
     });
-    res.cookie("refreshToken", tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: COOKIE_DOMAIN,
-      path: "/",
-    });
-    sendResponse({ res, message: "Token refreshed" });
   } catch (error: any) {
     sendResponse({
       res,
