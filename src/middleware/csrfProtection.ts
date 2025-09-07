@@ -12,7 +12,7 @@ export const parseCookies = cookieParser();
 // Configure and export CSRF protection middleware
 export const csrfProtection = csurf({
   cookie: {
-    httpOnly: false,
+    httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
     domain: COOKIE_DOMAIN,
@@ -27,7 +27,7 @@ export const exposeCsrfToken = (
   next: NextFunction
 ) => {
   res.cookie("XSRF-TOKEN", req.csrfToken(), {
-    httpOnly: false,
+    httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
     domain: COOKIE_DOMAIN,

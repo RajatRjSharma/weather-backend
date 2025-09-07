@@ -23,7 +23,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const tokens = await userService.loginUser(req.body);
 
     res.cookie("accessToken", tokens.accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -32,7 +32,7 @@ export const loginUser = async (req: Request, res: Response) => {
     });
 
     res.cookie("refreshToken", tokens.refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -60,7 +60,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   try {
     const tokens = await userService.refreshToken(req.cookies.refreshToken);
     res.cookie("accessToken", tokens.accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -68,7 +68,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       path: "/",
     });
     res.cookie("refreshToken", tokens.refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
