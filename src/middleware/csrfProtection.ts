@@ -3,6 +3,9 @@ import csurf from "csurf";
 import cookieParser from "cookie-parser";
 import { Request, Response, NextFunction } from "express";
 
+const COOKIE_DOMAIN =
+  process.env.NODE_ENV === "production" ? process.env.BACKEND_URL! : undefined;
+
 // Use this middleware to parse cookies before csurf
 export const parseCookies = cookieParser();
 
@@ -12,6 +15,8 @@ export const csrfProtection = csurf({
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
+    domain: COOKIE_DOMAIN,
+    path: "/",
   },
 });
 
@@ -24,6 +29,8 @@ export const exposeCsrfToken = (
   res.cookie("XSRF-TOKEN", req.csrfToken(), {
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
+    domain: COOKIE_DOMAIN,
+    path: "/",
   });
   next();
 };

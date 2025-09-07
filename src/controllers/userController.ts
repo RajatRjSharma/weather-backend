@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import * as userService from "../services/userServices";
 import { sendResponse } from "../utils/responseHandler";
 
+const COOKIE_DOMAIN =
+  process.env.NODE_ENV === "production" ? process.env.BACKEND_URL! : undefined;
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
     await userService.registerUser(req.body);
@@ -24,6 +27,8 @@ export const loginUser = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: COOKIE_DOMAIN,
+      path: "/",
     });
 
     res.cookie("refreshToken", tokens.refreshToken, {
@@ -31,6 +36,8 @@ export const loginUser = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: COOKIE_DOMAIN,
+      path: "/",
     });
 
     sendResponse({ res, message: "Login successful" });
@@ -44,8 +51,8 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const logoutUser = (req: Request, res: Response) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", { domain: COOKIE_DOMAIN, path: "/" });
+  res.clearCookie("refreshToken", { domain: COOKIE_DOMAIN, path: "/" });
   sendResponse({ res, message: "Logged out successfully" });
 };
 
@@ -57,12 +64,16 @@ export const refreshToken = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: COOKIE_DOMAIN,
+      path: "/",
     });
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: COOKIE_DOMAIN,
+      path: "/",
     });
     sendResponse({ res, message: "Token refreshed" });
   } catch (error: any) {
